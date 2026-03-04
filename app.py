@@ -206,7 +206,7 @@ def main():
             st.markdown("""
                 <div style="display: flex; flex-direction: column; justify-content: center; height: 100%;">
                     <h1 style="margin: 0; padding: 0;">ROBOT PANCASILA @2025</h1>
-                    <h4 style="margin: 0; margin-bottom: 10px;">Copyright Widodo Budiharto, Frederick Fios dan Karlina Dwinovera Mulia</h4>
+                    <h4 style="margin: 0; margin-bottom: 10px;">Copyright Widodo Budiharto, Frederick Fios dan Karina Dwinovera Mulia</h4>
                 </div>
             """, unsafe_allow_html=True)
 
