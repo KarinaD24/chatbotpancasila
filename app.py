@@ -69,7 +69,7 @@ def find_chunk(chunks, question):
 def ask_deepseek(question, study_material):
     # Prompt construction
     data = {
-        "model": "openrouter/free",
+        "model": "openai/gpt-oss-120b:free",
         "messages": [
             {
                 "role": "user", 
@@ -78,7 +78,7 @@ def ask_deepseek(question, study_material):
             {
                 "role": "system",
                 "content": (
-                    "Jawablah pertanyaan pengguna sebagai asisten AI Pancasila dan Character Building yang ramah berdasarkan materi pembelajaran..\n"
+                    "Jawablah pertanyaan pengguna sebagai asisten AI Pancasila dan Character Building yang ramah berdasarkan materi pembelajaran.\n"
                     "- Jika pertanyaannya berkaitan dengan konteks yang diberikan, berikan jawaban yang informatif dan relevan.\n"
                     "- Jika pertanyaannya bersifat umum atau tidak terkait dengan konteks, tetaplah merespons secara alami seperti AI percakapan. Bersikaplah ramah.\n"
                     "- Jawaban harus singkat, namun tetap menarik dan bersahabat.\n"
