@@ -3,6 +3,7 @@ import openai
 import re
 import speech_recognition as sr
 import os 
+from dotenv import load_dotenv
 import time
 import streamlit as st
 from playsound import playsound
@@ -13,19 +14,21 @@ from sklearn.metrics.pairwise import cosine_similarity
 from sentence_transformers import SentenceTransformer
 import numpy as np
 
+load_dotenv()
 r = sr.Recognizer()
 
-# API DeepSeek Via OpenRouter 
-# url = "https://openrouter.ai/api/v1/chat/completions"
-# headers = {
-#     "Authorization": f"Bearer {os.getenv('DEEPSEEK_API_KEY')}",
-#     "Content-Type": "application/json",
-# }
 
-client = openai.OpenAI(
-    base_url="https://models.github.ai/inference",
-    api_key= "API_KEY"
-)
+# API model Via OpenRouter 
+url = "https://openrouter.ai/api/v1/chat/completions"
+headers = {
+    "Authorization": f"Bearer {os.getenv('API_KEY')}",
+    "Content-Type": "application/json",
+}
+
+# client = openai.OpenAI(
+#     base_url="https://models.github.ai/inference",
+#     # api_key= os.getenv("GITHUB_TOKEN")
+# )
 
 def extract_text_from_pdf(pdf_path):
     text = ""
@@ -74,79 +77,80 @@ def find_chunk(chunks, question):
 
 def ask_model(question, study_material):
     # Prompt construction 
-    # data = {
-    #     "model": "deepseek/deepseek-r1:free",
-    #     "messages": [
-    #         {
-    #             "role": "user", 
-    #             "content": f"Materi pembelajaran: {study_material}\n\nPertanyaan: {question}"
-    #         },
-    #         {
-    #             "role": "system",
-    #             "content": (
-    #                 "Jawablah pertanyaan pengguna sebagai asisten AI Pancasila dan Character Building yang ramah berdasarkan materi pembelajaran..\n"
-    #                 "- Jika pertanyaannya berkaitan dengan konteks yang diberikan, berikan jawaban yang informatif dan relevan.\n"
-    #                 "- Jika pertanyaannya bersifat umum atau tidak terkait dengan konteks, tetaplah merespons secara alami seperti AI percakapan. Bersikaplah ramah.\n"
-    #                 "- Jawaban harus singkat, namun tetap menarik dan bersahabat.\n"
-    #                 "- Jawaban dalam bahasa Indonesia.\n"
-    #                 "- Jika tidak yakin, beri tahu pengguna bahwa kamu tidak memiliki cukup konteks, namun tetap usahakan untuk membantu."
-    #             )
-    #         }
-    #     ]
-    # }
+    data = {
+        "model": "arcee-ai/trinity-large-preview:free",
+        "messages": [
+            {
+                "role": "user", 
+                "content": f"Materi pembelajaran: {study_material}\n\nPertanyaan: {question}"
+            },
+            {
+                "role": "system",
+                "content": (
+                    "Kalau pengguna hanya menyapa biasa, sapa balik secara singkat, dan jangan menyebutkan materi pembelajaran, jadi abaikan saja materi pembelajaran.\n"
+                    "Jawablah pertanyaan pengguna sebagai asisten AI Pancasila dan Character Building yang ramah berdasarkan materi pembelajaran.\n"
+                    "- Jika pertanyaannya berkaitan dengan konteks yang diberikan, berikan jawaban yang informatif dan relevan.\n"
+                    "- Jika pertanyaannya bersifat umum atau tidak terkait dengan konteks, tetaplah merespons secara alami seperti AI percakapan. Bersikaplah ramah.\n"
+                    "- Jawaban harus singkat, namun tetap menarik dan bersahabat.\n"
+                    "- Jawaban dalam bahasa Indonesia.\n"
+                    "- Jika tidak yakin, beri tahu pengguna bahwa kamu tidak memiliki cukup konteks, namun tetap usahakan untuk membantu."
+                )
+            }
+        ]
+    }
 
-    # # Send request POST the API
-    # response = requests.post(url, headers=headers, json=data)
+    # Send request POST the API
+    response = requests.post(url, headers=headers, json=data)
 
-    # # Check the response to see if the API call was successful.
-    # if response.status_code == 200: 
-    #     print("\nRAW API response:")
-    #     print(response.json())
+    # Check the response to see if the API call was successful.
+    if response.status_code == 200: 
+        print("\nRAW API response:")
+        print(response.json())
 
-    #     # Get response from the AI
-    #     return response.json().get("choices", [{}])[0].get("message", {}).get("content", "No response.")
-    # return "Error fetching response."
+        # Get response from the AI
+        return response.json().get("choices", [{}])[0].get("message", {}).get("content", "No response.")
+    return "Error fetching response."
 
-    # Greetings simple handling
-    greetings = ["hai", "hi", "halo", "hello", "hey"]
-    if question.lower().strip() in greetings:
-        return "Hai! Ada yang bisa kubantu?"
+    # # Greetings simple handling
+    # greetings = ["hai", "hi", "halo", "hello", "hey"]
+    # if question.lower().strip() in greetings:
+    #     return "Hai! Ada yang bisa kubantu?"
 
-    # Prompt construction
-    messages = [
-        {
-            "role": "user", 
-            "content": f"Materi pembelajaran: {study_material}\n\nPertanyaan: {question}"
-        },
-        {
-            "role": "system",
-            "content": (
-                "Kalau pengguna hanya menyapa biasa, sapa balik secara singkat, dan jangan menyebutkan materi pembelajaran, jadi abaikan saja materi pembelajaran.\n"
-                "Jawablah pertanyaan pengguna sebagai asisten AI Pancasila dan Character Building yang ramah berdasarkan materi pembelajaran.\n"
-                "- Jika pertanyaannya berkaitan dengan konteks yang diberikan, berikan jawaban yang informatif dan relevan.\n"
-                "- Jika pertanyaannya bersifat umum atau tidak terkait dengan konteks, tetaplah merespons secara alami seperti AI percakapan. Bersikaplah ramah.\n"
-                "- Jawaban harus singkat, namun tetap menarik dan bersahabat.\n"
-                "- Jawaban dalam bahasa Indonesia.\n"
-                "- Jika tidak yakin, beri tahu pengguna bahwa kamu tidak memiliki cukup konteks, namun tetap usahakan untuk membantu."
-            )
-        }
-    ]
+    # # Prompt construction
+    # messages = [
+    #     {
+    #         "role": "user", 
+    #         "content": f"Materi pembelajaran: {study_material}\n\nPertanyaan: {question}"
+    #     },
+    #     {
+    #         "role": "system",
+    #         "content": (
+    #             "Kalau pengguna hanya menyapa biasa, sapa balik secara singkat, dan jangan menyebutkan materi pembelajaran, jadi abaikan saja materi pembelajaran.\n"
+    #             "Jawablah pertanyaan pengguna sebagai asisten AI Pancasila dan Character Building yang ramah berdasarkan materi pembelajaran.\n"
+    #             "- Jika pertanyaannya berkaitan dengan konteks yang diberikan, berikan jawaban yang informatif dan relevan.\n"
+    #             "- Jika pertanyaannya bersifat umum atau tidak terkait dengan konteks, tetaplah merespons secara alami seperti AI percakapan. Bersikaplah ramah.\n"
+    #             "- Jawaban harus singkat, namun tetap menarik dan bersahabat.\n"
+    #             "- Jawaban dalam bahasa Indonesia.\n"
+    #             "- Jika tidak yakin, beri tahu pengguna bahwa kamu tidak memiliki cukup konteks, namun tetap usahakan untuk membantu."
+    #         )
+    #     }
+    # ]
 
-    try:
-        print("\n(Thinking...)\n")
+    # try:
+    #     print("\n(Thinking...)\n")
 
-        response = client.chat.completions.create(
-            model="deepseek/DeepSeek-V3-0324", 
-            messages=messages,
-            temperature=0.7,
-            max_tokens=1024
-        )
+    #     response = client.chat.completions.create(
+    #         model="openai/gpt-5", 
+    #         messages=messages,
+    #         temperature=0.7,
+    #         max_tokens=1024
+    #     )
 
-        # print("Chatbot:", response.choices[0].message.content)
-        return response.choices[0].message.content
+    #     # print("Chatbot:", response.choices[0].message.content)
+    #     return response.choices[0].message.content
 
-    except Exception as e:
-        return f"Error fetching response: {e}"
+    # except Exception as e:
+    #     return f"Error fetching response: {e}"
 
 def ask_ai(question, context, topic):
     all_folder = "data/"
