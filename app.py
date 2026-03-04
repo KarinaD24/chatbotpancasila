@@ -69,7 +69,7 @@ def find_chunk(chunks, question):
 def ask_deepseek(question, study_material):
     # Prompt construction
     data = {
-        "model": "openrouter/free", // deepseek/deepseek-r1:free
+        "model": "openrouter/free",
         "messages": [
             {
                 "role": "user", 
